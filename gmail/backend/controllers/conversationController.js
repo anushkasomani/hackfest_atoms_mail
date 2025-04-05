@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Conversation from '../models/conversationModel.js';
 import User from '../models/userModel.js';
 import cloudinary from 'cloudinary';
+import axios from 'axios'
 
 // Debugging: Initial connection check
 console.log('[DEBUG] Initial MongoDB connection state:', mongoose.connection.readyState);
@@ -235,6 +236,102 @@ export const getConversationsForUser = async (req, res) => {
       ...(process.env.NODE_ENV === 'development' && {
         debug: {
           error: error.message
+        }
+      })
+    });
+  }
+};
+
+
+// *** NEW FUNCTION for AI Generation ***
+export const generateAiResponse = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { prompt } = req.body; // Get prompt from request body
+    const mlServiceUrl = process.env.ML_SERVICE_URL; // Get ML service URL from env
+
+    console.log(`[AI GEN] Request for conversationId: ${conversationId}`);
+    console.log(`[AI GEN] User prompt: ${prompt}`);
+
+    if (!prompt) {
+      return res.status(400).json({ message: "Prompt is required." });
+    }
+
+    if (!mlServiceUrl) {
+       console.error('[ERROR] ML_SERVICE_URL environment variable is not set.');
+       return res.status(500).json({ message: "AI service integration is not configured." });
+    }
+
+    // 1. Fetch the conversation data
+    const conversation = await Conversation.findOne({ conversationId });
+
+    if (!conversation) {
+      console.error(`[AI GEN ERROR] Conversation not found for ID: ${conversationId}`);
+      return res.status(404).json({ message: "Conversation not found." });
+    }
+
+    // 2. Prepare data for the ML service
+    //    Send the entire conversation object or just the messages array,
+    //    depending on what your Python service expects.
+    const payload = {
+      prompt: prompt,
+      conversation_data: conversation.toObject() // Send the plain JS object
+      // or maybe just: conversation_data: { messages: conversation.messages } 
+    };
+    
+    console.log(`[AI GEN] Sending data to ML Service at ${mlServiceUrl}/generate`);
+    // console.log(`[AI GEN] Payload: ${JSON.stringify(payload)}`); // Be careful logging large data
+
+    // 3. Call the Python ML Service
+    const mlResponse = await axios.post(`${mlServiceUrl}/generate`, payload, {
+         headers: { 'Content-Type': 'application/json' },
+         // Add a timeout?
+         // timeout: 30000 // 30 seconds
+    });
+
+    console.log('[AI GEN] Received response from ML Service:', mlResponse.data);
+
+    // 4. Send the response back to the client
+    res.status(200).json(mlResponse.data); // Forward the 'generated_text' (or whatever your ML service returns)
+
+  } catch (error) {
+    console.error('[ERROR] Error in generateAiResponse:', error.message);
+    
+    // Check if the error is from the axios request to the ML service
+    if (axios.isAxiosError(error)) {
+         console.error('[DEBUG] Axios error details:', {
+            message: error.message,
+            url: error.config?.url,
+            method: error.config?.method,
+            status: error.response?.status,
+            responseData: error.response?.data 
+         });
+         // Provide a more specific error message if the ML service responded with an error
+         if (error.response) {
+             return res.status(error.response.status || 503).json({ 
+                message: "Error response from AI service.",
+                ai_service_error: error.response.data // Forward the error from the ML service if appropriate
+             });
+         } else if (error.request) {
+             // The request was made but no response was received (e.g., service down)
+             return res.status(503).json({ message: "AI service is unavailable or did not respond." });
+         }
+    }
+    
+    // General server error
+    console.error('[DEBUG] General error details:', {
+      name: error.name,
+      stack: error.stack,
+      conversationId: req.params.conversationId,
+      requestBody: req.body
+    });
+
+    res.status(500).json({ 
+      message: "Server error during AI response generation.",
+      ...(process.env.NODE_ENV === 'development' && {
+        debug: {
+          error: error.message,
+          type: error.name
         }
       })
     });

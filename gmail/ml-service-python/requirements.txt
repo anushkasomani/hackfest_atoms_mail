@@ -1,0 +1,9 @@
+groq
+easyocr 
+pdf2image 
+Pillow 
+requests
+transformers
+dotenv
+torch
+flask
