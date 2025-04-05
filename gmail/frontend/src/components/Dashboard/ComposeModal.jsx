@@ -1,9 +1,13 @@
 import { Modal, Form, Button, Alert } from 'react-bootstrap';
 
-const ComposeModal = ({ show, onHide, formData, setFormData, onSend, error, success }) => {
+const ComposeModal = ({ show, onHide, formData, setFormData, onSend, error, success, setAttachment }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    setAttachment(e.target.files[0]);
   };
 
   return (
@@ -39,7 +43,7 @@ const ComposeModal = ({ show, onHide, formData, setFormData, onSend, error, succ
               required
             />
           </Form.Group>
-          <Form.Group controlId="formBody">
+          <Form.Group controlId="formBody" className="mb-3">
             <Form.Label>Message</Form.Label>
             <Form.Control
               as="textarea"
@@ -50,6 +54,14 @@ const ComposeModal = ({ show, onHide, formData, setFormData, onSend, error, succ
               value={formData.body}
               onChange={handleChange}
               required
+            />
+          </Form.Group>
+          <Form.Group controlId="formAttachment" className="mb-3">
+            <Form.Label>Attachment</Form.Label>
+            <Form.Control
+              type="file"
+              className="bg-secondary text-light"
+              onChange={handleFileChange}
             />
           </Form.Group>
         </Form>

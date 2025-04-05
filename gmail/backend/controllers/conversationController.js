@@ -1,9 +1,17 @@
 import mongoose from 'mongoose';
 import Conversation from '../models/conversationModel.js';
 import User from '../models/userModel.js';
+import cloudinary from 'cloudinary';
 
 // Debugging: Initial connection check
 console.log('[DEBUG] Initial MongoDB connection state:', mongoose.connection.readyState);
+
+// Configure Cloudinary
+cloudinary.v2.config({ 
+  cloud_name: 'dx3y6lm0i', 
+  api_key: '491323676563824', 
+  api_secret: 'irQnGYDVyRjQxmYQdwhUGyDuzMY'
+});
 
 // Create a new conversation (i.e. start a new chat session) and add the first message.
 export const createConversation = async (req, res) => {
@@ -65,13 +73,20 @@ export const createConversation = async (req, res) => {
     const participants = [sender.toLowerCase(), receiver.toLowerCase()];
     console.log('[DEBUG] Conversation participants:', participants);
 
+    // Process attachments - ensure it's always an array of strings (Cloudinary URLs)
+    const processedAttachments = Array.isArray(attachment) 
+      ? attachment.filter(url => typeof url === 'string')
+      : (attachment ? [attachment] : []);
+
+    console.log('[DEBUG] Processed attachments:', processedAttachments);
+
     // Create the new message object.
     const newMessage = {
       sender,
       receiver,
       subject,
       body,
-      attachment: attachment || [],
+      attachment: processedAttachments,
       createdAt: new Date(),
     };
     console.log('[DEBUG] New message content:', newMessage);
@@ -111,7 +126,6 @@ export const createConversation = async (req, res) => {
     });
   }
 };
-
 export const addReply = async (req, res) => {
   try {
     const { conversationId } = req.params;
@@ -204,7 +218,7 @@ export const getConversationsForUser = async (req, res) => {
     const conversations = await Conversation.find({ 
       participants: email.toLowerCase() 
     }).sort({ updatedAt: -1 });
-    console.log(conversations)
+
     console.log('[DEBUG] Conversations found:', conversations.length);
 
     res.json(conversations);

@@ -1,14 +1,14 @@
 import { ListGroup, Button } from 'react-bootstrap';
-
+import './Dashboard.css';
 const Sidebar = ({ onCompose }) => (
-  <div className="bg-secondary vh-100 p-3">
-    <h4 className="text-center">Menu</h4>
+  <div className="sidebar bg-dark text-light vh-100 p-3">
+    <h4 className="text-center mb-4">Menu</h4>
     <ListGroup variant="flush">
-      <ListGroup.Item action href="#inbox" className="bg-dark text-light border-0">
+      <ListGroup.Item action href="#inbox" className="sidebar-item">
         Inbox
       </ListGroup.Item>
     </ListGroup>
-    <Button variant="success" className="mt-3 w-100" onClick={onCompose}>
+    <Button variant="primary" className="mt-4 w-100 compose-button" onClick={onCompose}>
       Compose
     </Button>
   </div>
