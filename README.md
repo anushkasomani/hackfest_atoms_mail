@@ -1,1 +1,1 @@
-📬 AI-Enhanced Email for Atom Mail
+# 📬 AI-Enhanced Email for Atom Mail
