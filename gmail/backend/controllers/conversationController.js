@@ -204,7 +204,7 @@ export const getConversationsForUser = async (req, res) => {
     const conversations = await Conversation.find({ 
       participants: email.toLowerCase() 
     }).sort({ updatedAt: -1 });
-
+    console.log(conversations)
     console.log('[DEBUG] Conversations found:', conversations.length);
 
     res.json(conversations);
