@@ -75,7 +75,7 @@ summarizer= Summarizer(
 print("Summarizing the conversation...")
 summary , final_content, conversation_id= summarizer.run()
 print(final_content)
-print("-------------------------")
+
 print("results")
 print(f"Conversation_id : {conversation_id}")
 print(f"Summary :\n {summary}")
