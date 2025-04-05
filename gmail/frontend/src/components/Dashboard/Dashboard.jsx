@@ -1,22 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Modal } from 'react-bootstrap';
 import axios from 'axios';
-import Sidebar from './Sidebar'
+import Sidebar from './Sidebar';
 import InboxList from './InboxList';
 import ConversationDetail from './ConversationDetail';
 import ReplyModal from './ReplyModal';
 import ComposeModal from './ComposeModal';
+import './Dashboard.css';
 
 const Dashboard = () => {
   const [emails, setEmails] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
   const [showComposeModal, setShowComposeModal] = useState(false);
   const [composeData, setComposeData] = useState({ receiver: '', subject: '', body: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [attachment, setAttachment] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -35,6 +39,7 @@ const Dashboard = () => {
     try {
       const response = await axios.get(`/api/conversations/${conversationId}`);
       setSelectedConversation(response.data);
+      setShowModal(true); // Open the modal
     } catch (err) {
       console.error('Failed to fetch conversation:', err);
     }
@@ -66,6 +71,29 @@ const Dashboard = () => {
       setError('Failed to send reply. Please try again.');
     }
   };
+  const handleFileChange = (e) => {
+    setAttachment(e.target.files[0]);
+  };
+
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'check123');
+    
+    try {
+      setIsUploading(true);
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/dx3y6lm0i/upload`,
+        formData
+      );
+      return response.data.secure_url;
+    } catch (error) {
+      console.error('Error uploading to Cloudinary:', error);
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSendEmail = async () => {
     try {
@@ -73,13 +101,18 @@ const Dashboard = () => {
         setError('All fields are required.');
         return;
       }
+      let attachmentUrl = '';
+      if(attachment) {
+        attachmentUrl = await uploadToCloudinary(attachment);
+      }
       const emailData = {
         sender: userInfo.email,
         receiver: composeData.receiver,
         subject: composeData.subject,
         body: composeData.body,
-        attachment: [],
+        attachment: attachmentUrl ? [attachmentUrl] : [],
       };
+      
       const response = await axios.post('/api/conversations', emailData);
       if (response.status === 201) {
         setSuccess('Email sent successfully!');
@@ -98,21 +131,34 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-vh-100 bg-dark text-light">
+    <div className="dashboard-container">
       <Container fluid>
         <Row>
-          <Col md={3}>
+          <Col md={3} className="sidebar-container">
             <Sidebar onCompose={() => setShowComposeModal(true)} />
           </Col>
-          <Col md={9} className="p-4">
-            <h2>Inbox</h2>
+          <Col md={9} className="content-container">
+            <h2 className="inbox-title">Inbox</h2>
             <InboxList emails={emails} onEmailClick={handleEmailClick} userEmail={userInfo.email} />
-            {selectedConversation && (
-              <ConversationDetail conversation={selectedConversation} onReplyClick={handleReplyClick} />
-            )}
           </Col>
         </Row>
       </Container>
+
+      {/* Modal for Conversation Details */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Conversation Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedConversation && (
+            <ConversationDetail
+              conversation={selectedConversation}
+              onReplyClick={handleReplyClick}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
+
       <ReplyModal
         show={showReplyModal}
         onHide={() => setShowReplyModal(false)}
@@ -123,14 +169,15 @@ const Dashboard = () => {
         success={success}
       />
       <ComposeModal
-        show={showComposeModal}
-        onHide={() => setShowComposeModal(false)}
-        formData={composeData}
-        setFormData={setComposeData}
-        onSend={handleSendEmail}
-        error={error}
-        success={success}
-      />
+  show={showComposeModal}
+  onHide={() => setShowComposeModal(false)}
+  formData={composeData}
+  setFormData={setComposeData}
+  onSend={handleSendEmail}
+  error={error}
+  success={success}
+  setAttachment={setAttachment}
+/>
     </div>
   );
 };
