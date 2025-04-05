@@ -39,6 +39,7 @@ const Dashboard = () => {
     try {
       const response = await axios.get(`/api/conversations/${conversationId}`);
       setSelectedConversation(response.data);
+      console.log("these are the convos", response.data);
       setShowModal(true); // Open the modal
     } catch (err) {
       console.error('Failed to fetch conversation:', err);

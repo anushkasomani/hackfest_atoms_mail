@@ -10,6 +10,20 @@ const ConversationDetail = ({ conversation, onReplyClick }) => (
           <div><strong>To:</strong> {message.receiver}</div>
           <div><strong>Subject:</strong> {message.subject}</div>
           <div><strong>Message:</strong> {message.body}</div>
+          {message.attachment && message.attachment.length > 0 && (
+            <div>
+              <strong>Attachments:</strong>
+              <ul>
+                {message.attachment.map((link, index) => (
+                  <li key={index}>
+                    <a href={link} target="_blank" rel="noopener noreferrer" className="text-light">
+                      Attachment {index + 1}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </ListGroup.Item>
       ))}
     </ListGroup>

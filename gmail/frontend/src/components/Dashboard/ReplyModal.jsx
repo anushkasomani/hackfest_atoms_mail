@@ -1,6 +1,6 @@
 import { Modal, Form, Button, Alert } from 'react-bootstrap';
 
-const ReplyModal = ({ show, onHide, message, setMessage, onSend, error, success }) => (
+const ReplyModal = ({ show, onHide, message, setMessage, onSend, error, success, setAttachment }) => (
   <Modal show={show} onHide={onHide} centered>
     <Modal.Header closeButton className="bg-dark text-light">
       <Modal.Title>Reply</Modal.Title>
@@ -18,6 +18,14 @@ const ReplyModal = ({ show, onHide, message, setMessage, onSend, error, success 
             placeholder="Enter your reply"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group controlId="formReplyAttachment" className="mt-3">
+          <Form.Label>Attachment</Form.Label>
+          <Form.Control
+            type="file"
+            className="bg-secondary text-light"
+            onChange={(e) => setAttachment(e.target.files[0])}
           />
         </Form.Group>
       </Form>
