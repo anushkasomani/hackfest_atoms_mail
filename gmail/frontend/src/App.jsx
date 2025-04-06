@@ -9,9 +9,8 @@ const App = () => {
     <>
       <Header />
       <ToastContainer />
-      <Container >
         <Outlet />
-      </Container>
+      
     </>
   );
 };

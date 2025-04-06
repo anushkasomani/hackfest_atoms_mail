@@ -1,122 +1,117 @@
 import React from 'react';
-import { Form, Button, Spinner, Alert, Card } from 'react-bootstrap';
+import { Form, Button, Spinner, Alert, Card, Accordion } from 'react-bootstrap'; // Ensure Accordion is imported
 
 const AiReplyBox = ({
   prompt,
   setPrompt,
   onGenerate,
   isLoading,
-  generatedReply,
+  // Receive both summary and dialogues props
+  generatedSummary,
+  formattedDialogues,
   error,
-  onUseReply
+  onUseReply // Function to take text (summary) and put it in the manual reply modal
 }) => {
   return (
-    <Card className="mt-3 border-0 shadow-lg" style={{ backgroundColor: '#f9f9f9', borderRadius: '12px' }}>
+    // Use a Card for better visual grouping
+    <Card className="mt-3 bg-light border shadow-sm">
       <Card.Body>
-        <Card.Title className="mb-3 h5 text-center text-dark" >
-           Generate Reply with AI 
-        </Card.Title>
+        <Card.Title className="mb-3 h6">Generate Reply with AI</Card.Title>
 
-        {error && (
-          <Alert variant="danger" className="mt-2 py-2 px-3 small">
-            {error}
-          </Alert>
-        )}
+        {/* Display AI-specific errors */}
+        {error && <Alert variant="danger" className="mt-2 py-1 px-2 small">{error}</Alert>}
 
-        <Form.Group controlId="aiPromptTextArea" className="mb-3">
-          <Form.Label className="small mb-2 text-dark fw-bold" >
-            Your Instruction/Prompt for AI:
-          </Form.Label>
+        {/* Prompt Input Area */}
+        <Form.Group controlId="aiPromptTextArea" className="mb-2">
+          <Form.Label className="small mb-1">Your Instruction/Prompt for AI:</Form.Label>
           <Form.Control
             as="textarea"
-            rows={3}
-            placeholder="e.g., Write a polite refusal based on the last message."
+            rows={2}
+            placeholder="e.g., Summarize attachments, suggest a reply..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             disabled={isLoading}
-            className="form-control-sm"
-            style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #4c1d95',
-              borderRadius: '8px',
-              color: '#4c1d95'
-            }}
+            className="bg-white form-control-sm"
           />
         </Form.Group>
 
-        <div className="text-center">
-          <Button
-            onClick={onGenerate}
-            disabled={isLoading || !prompt.trim()}
-            size="sm"
-            style={{
-              backgroundColor: '#ff6b6b',
-              borderColor: '#ff6b6b',
-              borderRadius: '8px',
-              padding: '6px 12px',
-              fontWeight: 'bold'
-            }}
-          >
-            {isLoading ? (
-              <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
-                <span className="ms-1">Generating...</span>
-              </>
-            ) : (
-              'Generate AI Reply'
-            )}
-          </Button>
-        </div>
+        {/* Generate Button with Loading State */}
+        <Button
+          variant="primary"
+          onClick={onGenerate}
+          disabled={isLoading || !prompt.trim()}
+          size="sm"
+          className="me-2"
+        >
+          {isLoading ? (
+            <>
+              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+              <span className="ms-1">Generating...</span>
+            </>
+          ) : (
+            'Generate AI Analysis' // Renamed button slightly
+          )}
+        </Button>
 
-        {generatedReply && !isLoading && (
-          <Card className="mt-4 border-0 shadow-sm" style={{ backgroundColor: '#ffffff', borderRadius: '12px' }}>
-            <Card.Header
-              as="h6"
-              className="py-2 px-3 text-white small"
-              style={{ backgroundColor: '#4c1d95', borderRadius: '12px 12px 0 0' }}
-            >
-              Suggested Reply:
-            </Card.Header>
-            <Card.Body className="p-3">
-              <pre
-                className="mb-3 small"
-                style={{
-                  whiteSpace: 'pre-wrap',
-                  wordWrap: 'break-word',
-                  color: '#333',
-                  backgroundColor: '#f8f9fa',
-                  padding: '10px',
-                  borderRadius: '8px',
-                  border: '1px solid #ddd'
-                }}
-              >
-                {generatedReply}
-              </pre>
-              <div className="text-center">
-                <Button
-                  variant="success"
-                  size="sm"
-                  style={{
-                    backgroundColor: '#4c1d95',
-                    borderColor: '#4c1d95',
-                    borderRadius: '8px',
-                    padding: '6px 12px',
-                    fontWeight: 'bold'
-                  }}
-                  onClick={() => onUseReply(generatedReply)}
-                >
-                  Use this Reply
-                </Button>
-              </div>
-            </Card.Body>
-          </Card>
+        {/* --- Display Results Section (UPDATED) --- */}
+        {/* Show results section only when not loading AND either summary or dialogues exist */}
+        {!isLoading && (generatedSummary || formattedDialogues) && (
+          <div className="mt-3">
+            {/* Use Accordion to optionally collapse sections */}
+            <Accordion defaultActiveKey={generatedSummary ? "0" : "1"}> {/* Open summary first if exists */}
+
+              {/* Attachment Summary Section */}
+              {generatedSummary && ( // Conditionally render based on prop
+                <Accordion.Item eventKey="0">
+                  {/* Use as={Button} with variant="link" for custom look if needed */}
+                  <Accordion.Header as="div" className="small py-1 px-2">
+                     Attachment Summary:
+                  </Accordion.Header>
+                  <Accordion.Body className="p-2">
+                    {/* Use pre-wrap to preserve formatting */}
+                    <pre className="mb-2 small" style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                      {generatedSummary}
+                    </pre>
+                    {/* Button to use the summary in the reply modal */}
+                    <Button variant="outline-success" size="sm" className="mt-1" onClick={onUseReply}>
+                      Use Summary in Reply
+                    </Button>
+                  </Accordion.Body>
+                </Accordion.Item>
+              )}
+
+              {/* Formatted Dialogues Section */}
+              {formattedDialogues && ( // Conditionally render based on prop
+                <Accordion.Item eventKey="1">
+                   <Accordion.Header as="div" className="small py-1 px-2">
+                      Formatted Conversation Text:
+                   </Accordion.Header>
+                   <Accordion.Body className="p-2">
+                     {/* Scrollable preformatted text block */}
+                     <pre
+                        className="mb-2 small"
+                        style={{
+                             whiteSpace: 'pre-wrap',
+                             wordWrap: 'break-word',
+                             maxHeight: '300px', // Limit height
+                             overflowY: 'auto', // Add scrollbar
+                             backgroundColor: '#f8f9fa', // Slightly different bg
+                             padding: '5px',
+                             border: '1px solid #dee2e6'
+                         }}
+                     >
+                       {formattedDialogues}
+                     </pre>
+                     {/* No action button needed for dialogues unless you want one */}
+                   </Accordion.Body>
+                </Accordion.Item>
+              )}
+
+            </Accordion>
+          </div>
         )}
+        {/* --- End Display Results Section --- */}
+
       </Card.Body>
     </Card>
   );
