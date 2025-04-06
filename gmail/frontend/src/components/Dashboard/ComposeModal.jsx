@@ -1,6 +1,6 @@
-import { Modal, Form, Button, Alert } from 'react-bootstrap';
-
-const ComposeModal = ({ show, onHide, formData, setFormData, onSend, error, success, setAttachment }) => {
+import React from "react";
+import { Modal, Form, Alert, Button } from "react-bootstrap";
+const ComposeModal = ({ show, onHide, formData = {}, setFormData, onSend, error, success, setAttachment }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -26,7 +26,7 @@ const ComposeModal = ({ show, onHide, formData, setFormData, onSend, error, succ
               name="receiver"
               className="bg-secondary text-light"
               placeholder="Enter recipient email"
-              value={formData.receiver}
+              value={formData.receiver || ''}
               onChange={handleChange}
               required
             />
@@ -38,7 +38,7 @@ const ComposeModal = ({ show, onHide, formData, setFormData, onSend, error, succ
               name="subject"
               className="bg-secondary text-light"
               placeholder="Enter subject"
-              value={formData.subject}
+              value={formData.subject || ''}
               onChange={handleChange}
               required
             />
@@ -51,7 +51,7 @@ const ComposeModal = ({ show, onHide, formData, setFormData, onSend, error, succ
               name="body"
               className="bg-secondary text-light"
               placeholder="Enter your message"
-              value={formData.body}
+              value={formData.body || ''}
               onChange={handleChange}
               required
             />
@@ -74,4 +74,4 @@ const ComposeModal = ({ show, onHide, formData, setFormData, onSend, error, succ
   );
 };
 
-export default ComposeModal;
+export default ComposeModal

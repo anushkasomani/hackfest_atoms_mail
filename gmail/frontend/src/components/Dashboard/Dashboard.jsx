@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Container, Row, Col, Modal, Alert } from 'react-bootstrap'; // Added Alert
 import axios from 'axios';
-
 // Relative imports within the same directory
 import Sidebar from './Sidebar';
 import InboxList from './InboxList';
@@ -329,7 +328,7 @@ const Dashboard = () => {
       </Container>
 
       {/* Modal for Conversation Details */}
-      <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} size="lg" centered backdrop="static"> {/* static backdrop */}
+      <Modal contentClassName="modal-height" show={showDetailModal} onHide={() => setShowDetailModal(false)} size="xl" centered backdrop="static"> {/* static backdrop */}
         <Modal.Header closeButton>
           <Modal.Title>Conversation</Modal.Title>
         </Modal.Header>
