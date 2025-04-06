@@ -384,7 +384,7 @@ const Dashboard = () => {
       </Container>
 
       {/* Modal for Conversation Details (Includes AI Box) */}
-      <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} size="lg" centered backdrop="static">
+      <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} size="xl" centered backdrop="static">
         <Modal.Header closeButton>
           <Modal.Title>Conversation</Modal.Title>
         </Modal.Header>

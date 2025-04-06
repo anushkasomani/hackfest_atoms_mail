@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
 from rag_main import RAG
-
+from langchain_community.document_loaders.mongodb import MongodbLoader
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -44,16 +44,22 @@ def query_rag():
         
         # Load documents from MongoDB with the filter applied
         if True:
-            docs = rag_model.load_documents_from_mongodb(
-                connection_string="mongodb+srv://anushka:anushkas@cluster0.w2aa386.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-                db_name="atom-mail",
-                collection_name="summary",
-                filter_criteria=filter_criteria,
-                field_names=field_names
+            loader = MongodbLoader(
+                connection_string="mongodb+srv://adityavaryan:hackfest25@hackfest25.pvcefma.mongodb.net/?retryWrites=true&w=majority&appName=hackfest250",
+                db_name="auth",
+                collection_name="summaries",
+                filter_criteria={
+                    "$or": [
+                        {"user_name": "aditya@gmail.com"},
+                        {"other": "aditya@gmail.com"}
+                    ]
+                },
+                field_names=["user_name", "other", "email_thread", "summary"],
             )
+            docs = loader.load()
             
             # Process documents to extract summaries into metadata
-            processed_docs = rag_model.summary_to_meta(docs)
+            processed_docs = docs
             
             split_docs = rag_model.split_documents(processed_docs)
             
@@ -78,5 +84,5 @@ def health_check():
     return jsonify({"status": "ok"}), 200
 
 if __name__ == '__main__':
-    port = int(os.getenv("PORT", 5001))  # Change to 8080 or another free port
+    port = int(os.getenv("PORT", 5000))  # Change to 8080 or another free port
     app.run(host='0.0.0.0', port=port, debug=False)

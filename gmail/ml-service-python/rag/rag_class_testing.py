@@ -7,6 +7,7 @@ from langchain_core.documents import Document
 import re
 import ast
 import json
+from langchain_community.document_loaders.mongodb import MongodbLoader
 
 # Use your improved summary_to_meta function
 
@@ -16,24 +17,25 @@ def main():
 
     # Load documents from MongoDB using your parameters
     print("Loading documents from MongoDB...")
-    docs = rag_instance.load_documents_from_mongodb(
-        connection_string="mongodb+srv://anushka:anushkas@cluster0.w2aa386.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-        db_name="atom-mail",
-        collection_name="summary",
+    loader = MongodbLoader(
+        connection_string="mongodb+srv://adityavaryan:hackfest25@hackfest25.pvcefma.mongodb.net/?retryWrites=true&w=majority&appName=hackfest250",
+        db_name="auth",
+        collection_name="summaries",
         filter_criteria={
             "$or": [
-                {"user_email": "somanianu@gmail.com"},
-                {"other": "somanianu@gmail.com"}
+                {"user_name": "aditya@gmail.com"},
+                {"other": "aditya@gmail.com"}
             ]
         },
-        field_names=["user_email", "other", "email_thread", "summary"]
+        field_names=["user_name", "other", "email_thread", "summary"],
     )
+    docs = loader.load()
     
     print(f"Total documents retrieved: {len(docs)}")
 
-    # Use your improved preprocessing function
+    # Use your improved preprocessing functionwrite 
     print("Preprocessing documents...")
-    processed_docs = rag_instance.summary_to_meta(docs)
+    processed_docs = docs
     if not processed_docs:
         print("No valid documents processed. Exiting.")
         return

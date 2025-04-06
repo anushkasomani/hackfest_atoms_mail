@@ -1,7 +1,7 @@
 import { Modal, Form, Button, Alert } from 'react-bootstrap';
-
+import './Dashboard.css'
 const ReplyModal = ({ show, onHide, message, setMessage, onSend, error, success, setAttachment }) => (
-  <Modal show={show} onHide={onHide} centered>
+  <Modal show={show} onHide={onHide} centered  >
     <Modal.Header closeButton className="bg-dark text-light">
       <Modal.Title>Reply</Modal.Title>
     </Modal.Header>
@@ -32,7 +32,7 @@ const ReplyModal = ({ show, onHide, message, setMessage, onSend, error, success,
     </Modal.Body>
     <Modal.Footer className="bg-dark text-light">
       <Button variant="secondary" onClick={onHide}>Close</Button>
-      <Button variant="success" onClick={onSend}>Send Reply</Button>
+      <Button variant="success" onClick={onSend} style={{backgroundColor:"#ff6b6b", borderColor:"#ff6b6b"}}>Send Reply</Button>
     </Modal.Footer>
   </Modal>
 );
