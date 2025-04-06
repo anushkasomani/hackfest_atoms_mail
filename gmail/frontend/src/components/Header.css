@@ -1,0 +1,49 @@
+header {
+    background-color: #343a40; /* Dark background for the header */
+    color: #ffffff; /* White text for better contrast */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+  
+  .navbar-brand {
+    font-size: 1.5rem; /* Slightly larger font for branding */
+    font-weight: bold;
+    color: #ffffff !important; /* Ensure brand text is white */
+  }
+  
+  .navbar-nav .nav-link {
+    color: #dcdcdc !important; /* Light gray for nav links */
+    font-size: 1rem;
+    margin-left: 10px;
+    transition: color 0.3s ease; /* Smooth hover effect */
+  }
+  
+  .navbar-nav .nav-link:hover {
+    color: #f8f9fa !important; /* Lighter color on hover */
+  }
+  
+  .navbar-nav .dropdown-menu {
+    background-color: #343a40; /* Match dropdown with header background */
+    border: none;
+  }
+  
+  .navbar-nav .dropdown-item {
+    color: #dcdcdc;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .navbar-nav .dropdown-item:hover {
+    background-color: #495057; /* Slightly lighter background on hover */
+    color: #ffffff;
+  }
+  
+  .navbar-toggler {
+    border-color: #ffffff; /* White border for the toggle button */
+  }
+  
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%280, 0, 0, 0.5%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+  }
+  
+  .navbar-collapse {
+    justify-content: flex-end; /* Align nav items to the right */
+  }

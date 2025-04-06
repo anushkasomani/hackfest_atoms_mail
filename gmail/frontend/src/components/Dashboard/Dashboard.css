@@ -1,95 +1,118 @@
-/* General Styles */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* Sidebar Styles */
-  .sidebar {
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    border-right: 2px solid #34495e;
-    height: 100vh;
-  }
-  
-  .sidebar h4 {
-    font-weight: bold;
-    color: #ecf0f1;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  .sidebar-item {
-    background-color: #34495e;
-    color: #ecf0f1;
-    border: none;
-    padding: 10px 15px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .sidebar-item:hover {
-    background-color: #1abc9c;
-    color: #ffffff;
-    transform: translateX(5px);
-  }
-  
-  .compose-button {
-    background-color: #1abc9c;
-    border: none;
-    font-weight: bold;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .compose-button:hover {
-    background-color: #16a085;
-    transform: scale(1.05);
-  }
-  
-  /* Dashboard Styles */
-  .dashboard-container {
-    background-color: #f4f4f9;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  
-  .sidebar-container {
-    padding: 20px;
-  }
-  
-  .content-container {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .inbox-title {
-    color: #3498db;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  /* Inbox List Styles */
-  .inbox-list-item {
-    background-color: #ecf0f1;
-    color: #2c3e50;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    cursor: pointer;
-  }
-  
-  .inbox-list-item:hover {
-    background-color: #3498db;
-    color: #ffffff;
-    transform: translateY(-3px);
-  }
+/* Overall Dashboard container */
+.dashboard-container {
+  padding: 1rem;
+  background-color: #1e293b; /* Dark blue-gray background */
+  min-height: 100vh;
+  margin: 0 !important;
+}
+
+/* Sidebar container */
+.sidebar-container {
+  background-color: #1e293b;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sidebar common item styling (Inbox & Compose) */
+.sidebar-item {
+  background-color: #1e293b; /* Same background */
+  color: #ffffff;            /* White text */
+  border: none;
+  border-radius: 12px;
+  padding: 10px 15px;
+  width: 90%;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Hover effect for sidebar items */
+.sidebar-item:hover {
+  background-color: #4b5563; /* Gray hover */
+  transform: scale(1.02);
+}
+
+/* Compose button: add subtle peachy red accent */
+.compose-button {
+  background-color: #ff6b6b; /* Peachy red background */
+  border: 2px solid #ff6b6b;
+  color: #ffffff;            /* White text */
+}
+
+.ai-helper-btn {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+  background-color: transparent;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.ai-helper-btn:hover {
+  border-color: #ff6b6b;
+  background-color: #ff6b6b;
+  color: #ffffff;
+}
+
+/* Inbox List Styling */
+.inbox-list {
+  border: none;
+  background-color: transparent;
+}
+
+/* Individual email items */
+.email-list-item {
+  background-color: #1e293b;
+  color: #ffffff;           /* White text */
+  border-radius: 12px;
+  margin-bottom: 8px;
+  border: none;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  padding: 10px 15px;
+}
+
+.inbox-title{
+  color: #ffffff;
+}
+
+/* Hover effect for email items */
+.email-list-item:hover {
+  background-color: #4b5563; /* Gray hover */
+  transform: scale(1.02);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+}
+
+/* Top row inside each email item */
+.email-list-item-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Envelope icon with peachy red accent */
+.email-icon {
+  margin-right: 12px;
+  color: #ff6b6b;
+}
+
+/* "From:" label uses white text */
+.email-from {
+  color: #ffffff;
+  margin-right: 6px;
+}
+
+/* Subject text: light gray and italic */
+.email-list-item-subject {
+  font-style: italic;
+  color: #d1d5db;
+}
+
+/* Modal content styling */
+.modal-content {
+  background-color: #1e293b;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
