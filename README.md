@@ -1,6 +1,10 @@
 📬 AI-Enhanced Email for Atom Mail
 
 Welcome to the future of email communication. Our AI-Enhanced Email system revolutionizes how you read, write, and respond to emails using advanced Retrieval-Augmented Generation (RAG) pipelines, real-time summarization, and intelligent tone detection. Say goodbye to writer’s block and context loss—this is smart email, redefined. 🚀
+
+
+
+
 ✨ Overview
 Atom Mail's AI-Enhanced Email brings together the power of RAG-based architectures, real-time embeddings, and dynamic response generation to create a seamless email experience. From smart summarization of long threads to automatic tone detection and personalized replies, our system adapts to your style, your context, and your workflow.
 Whether you're a professional, developer, or entrepreneur—generate high-quality, context-aware replies in seconds using our custom-built LLM pipeline, enhanced with vector search, metadata-driven memory, and LangChain orchestration.
