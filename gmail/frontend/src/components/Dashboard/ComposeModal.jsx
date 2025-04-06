@@ -1,77 +1,109 @@
-import React from "react";
-import { Modal, Form, Alert, Button } from "react-bootstrap";
-const ComposeModal = ({ show, onHide, formData = {}, setFormData, onSend, error, success, setAttachment }) => {
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+// Inside src/components/dashboard/ComposeModal.jsx
+import React from 'react'; // Ensure React is imported if not already
+import { Modal, Form, Button, Alert, Spinner } from 'react-bootstrap';
 
-  const handleFileChange = (e) => {
-    setAttachment(e.target.files[0]);
-  };
+const ComposeModal = ({
+  show,
+  onHide,
+  formData,
+  setFormData,
+  onSend,
+  error,
+  success,
+  setAttachment, // This prop receives handleComposeFileChange from Dashboard
+  isSending
+}) => {
+
+  // Handler within ComposeModal (optional, can directly use prop in onChange)
+  // const handleFileChange = (event) => {
+  //   setAttachment(event); // Pass the whole event object up
+  // };
 
   return (
-    <Modal show={show} onHide={onHide} centered>
-      <Modal.Header closeButton className="bg-dark text-light">
-        <Modal.Title>Compose Email</Modal.Title>
+    <Modal show={show} onHide={onHide} centered backdrop="static">
+      <Modal.Header closeButton className="bg-dark text-light py-2">
+        <Modal.Title className="h6">Compose New Email</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-light">
-        {error && <Alert variant="danger">{error}</Alert>}
-        {success && <Alert variant="success">{success}</Alert>}
+        {error && <Alert variant="danger" className="py-1 px-2 small">{error}</Alert>}
+        {success && <Alert variant="success" className="py-1 px-2 small">{success}</Alert>}
         <Form>
-          <Form.Group controlId="formReceiver" className="mb-3">
-            <Form.Label>To</Form.Label>
+          <Form.Group className="mb-2" controlId="composeReceiver">
+            <Form.Label className="small mb-1">To:</Form.Label>
             <Form.Control
               type="email"
+              placeholder="Recipient email"
               name="receiver"
-              className="bg-secondary text-light"
-              placeholder="Enter recipient email"
-              value={formData.receiver || ''}
-              onChange={handleChange}
+              value={formData.receiver}
+              onChange={(e) => setFormData({ ...formData, receiver: e.target.value })}
+              disabled={isSending || !!success}
+              className="bg-secondary text-light form-control-sm"
               required
             />
           </Form.Group>
-          <Form.Group controlId="formSubject" className="mb-3">
-            <Form.Label>Subject</Form.Label>
+          <Form.Group className="mb-2" controlId="composeSubject">
+            <Form.Label className="small mb-1">Subject:</Form.Label>
             <Form.Control
               type="text"
+              placeholder="Email subject"
               name="subject"
-              className="bg-secondary text-light"
-              placeholder="Enter subject"
-              value={formData.subject || ''}
-              onChange={handleChange}
+              value={formData.subject}
+              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+              disabled={isSending || !!success}
+              className="bg-secondary text-light form-control-sm"
               required
             />
           </Form.Group>
-          <Form.Group controlId="formBody" className="mb-3">
-            <Form.Label>Message</Form.Label>
+          <Form.Group className="mb-3" controlId="composeBody">
+            <Form.Label className="small mb-1">Body:</Form.Label>
             <Form.Control
               as="textarea"
-              rows={5}
+              rows={6}
+              placeholder="Compose your email..."
               name="body"
-              className="bg-secondary text-light"
-              placeholder="Enter your message"
-              value={formData.body || ''}
-              onChange={handleChange}
+              value={formData.body}
+              onChange={(e) => setFormData({ ...formData, body: e.target.value })}
+              disabled={isSending || !!success}
+              className="bg-secondary text-light form-control-sm"
               required
             />
           </Form.Group>
-          <Form.Group controlId="formAttachment" className="mb-3">
-            <Form.Label>Attachment</Form.Label>
+          <Form.Group controlId="composeAttachment" className="mb-2">
+            <Form.Label className="small mb-1">Attachment (Optional)</Form.Label>
             <Form.Control
               type="file"
-              className="bg-secondary text-light"
-              onChange={handleFileChange}
+              className="bg-secondary text-light form-control-sm"
+              // --- *** CHANGE HERE *** ---
+              // Directly pass the event object to the prop function
+              onChange={setAttachment}
+              // --- *** END CHANGE *** ---
+              disabled={isSending || !!success}
             />
+            {/* You could display the selected filename here */}
+             {/* {composeAttachment && <small className="text-muted d-block mt-1">{composeAttachment.name}</small>} */}
           </Form.Group>
         </Form>
       </Modal.Body>
-      <Modal.Footer className="bg-dark text-light">
-        <Button variant="secondary" onClick={onHide}>Close</Button>
-        <Button variant="success" onClick={onSend}>Send Email</Button>
+      <Modal.Footer className="bg-dark text-light py-2">
+        <Button variant="secondary" size="sm" onClick={onHide} disabled={isSending}>
+          Cancel
+        </Button>
+        <Button
+           variant="primary" // Changed to primary for compose
+           size="sm"
+           onClick={onSend}
+           disabled={!formData.receiver || !formData.subject || !formData.body || isSending || !!success}
+        >
+           {isSending ? (
+              <>
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                <span className="ms-1">Sending...</span>
+              </>
+            ) : success ? 'Sent!' : 'Send Email'}
+        </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default ComposeModal
+export default ComposeModal;
