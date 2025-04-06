@@ -3,7 +3,7 @@ import { Button, ListGroup, Card } from 'react-bootstrap'; // Ensure Card is imp
 
 // Relative import within the same directory
 import AiReplyBox from './AiReplyBox.jsx'; // Assuming .jsx extension
-
+import './Dashboard.css'
 
 const ConversationDetail = ({
   conversation,
@@ -78,10 +78,10 @@ const ConversationDetail = ({
 
       {/* Action Buttons (Keep existing) */}
       <div className="action-buttons mb-3 d-flex gap-2">
-        <Button variant="outline-secondary" size="sm" onClick={onReplyClick}>
+        <Button variant="outline-info" className='ai-helper-btn' size="sm" onClick={onReplyClick}>
           Reply Manually
         </Button>
-        <Button variant="outline-info" size="sm" onClick={onToggleAiPrompt}>
+        <Button variant="outline-info" className='ai-helper-btn' size="sm" onClick={onToggleAiPrompt}>
           {showAiPrompt ? 'Hide AI Helper' : 'Reply with AI'}
         </Button>
       </div>

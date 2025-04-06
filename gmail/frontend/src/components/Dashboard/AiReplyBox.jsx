@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Button, Spinner, Alert, Card, Accordion } from 'react-bootstrap'; // Ensure Accordion is imported
-
+import './Dashboard.css'
+import { Dropdown } from 'react-bootstrap';
 const AiReplyBox = ({
   prompt,
   setPrompt,
@@ -16,14 +17,14 @@ const AiReplyBox = ({
     // Use a Card for better visual grouping
     <Card className="mt-3 bg-light border shadow-sm">
       <Card.Body>
-        <Card.Title className="mb-3 h6">Generate Reply with AI</Card.Title>
+        <Card.Title className="mb-3 h6 text-dark">Generate Reply with AI</Card.Title>
 
         {/* Display AI-specific errors */}
         {error && <Alert variant="danger" className="mt-2 py-1 px-2 small">{error}</Alert>}
 
         {/* Prompt Input Area */}
         <Form.Group controlId="aiPromptTextArea" className="mb-2">
-          <Form.Label className="small mb-1">Your Instruction/Prompt for AI:</Form.Label>
+          <Form.Label className="small mb-1 text-dark">Your Instruction/Prompt for AI:</Form.Label>
           <Form.Control
             as="textarea"
             rows={2}
@@ -34,6 +35,18 @@ const AiReplyBox = ({
             className="bg-white form-control-sm"
           />
         </Form.Group>
+       <div>
+        <Dropdown >
+      <Dropdown.Toggle variant="success" id="dropdown-basic" className='bg-secondary border-secondary m-2'>
+        Tone
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <Dropdown.Item href="#/action-1">Informal</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Formal</Dropdown.Item>
+        <Dropdown.Item href="#/action-3">Refined</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
 
         {/* Generate Button with Loading State */}
         <Button
@@ -42,6 +55,7 @@ const AiReplyBox = ({
           disabled={isLoading || !prompt.trim()}
           size="sm"
           className="me-2"
+          style={{backgroundColor: "#ff6b6b", borderColor:"#ff6b6b"}}
         >
           {isLoading ? (
             <>
@@ -53,6 +67,7 @@ const AiReplyBox = ({
           )}
         </Button>
 
+       </div>
         {/* --- Display Results Section (UPDATED) --- */}
         {/* Show results section only when not loading AND either summary or dialogues exist */}
         {!isLoading && (generatedSummary || formattedDialogues) && (

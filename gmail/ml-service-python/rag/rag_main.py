@@ -63,6 +63,8 @@ contextualize_q_prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}")
 ])
 
+default_query = "Generate an email as a reply to the latest email to the speficied person. "
+
 # Updated QA Prompt to use email_summary from metadata
 qa_system_prompt = """You are a highly capable and helpful AI assistant.
 
@@ -90,7 +92,7 @@ qa_prompt = ChatPromptTemplate.from_messages([
 ])
 
 no_retrieval_prompt = ChatPromptTemplate.from_messages([
-    ("system", "Answer based on your knowledge and conversation history."),
+    ("system", "Answer based on your knowledge and the chat history"),
     MessagesPlaceholder("chat_history"),
     ("human", "{input}")
 ])
@@ -106,6 +108,8 @@ Consider these cases:
 
 Example needing retrieval: "What did Anushka say about the database?" or "Draft a reply to the last email."
 Example not needing retrieval: "Hello" or "Can you explain ChromaDB in general?" (unless the history implies context)
+
+IF THE USER QUERY IS EMPTY, RETRIEVAL IS REQUIRED.
 """),
     MessagesPlaceholder("chat_history"),
     ("human", "{input}")
@@ -120,17 +124,39 @@ def decide_to_retrieve(response: str) -> bool:
     """Parse decision response to boolean."""
     return response.strip().upper() == "YES"
 
-def _format_docs_with_summaries(docs: List[Document]) -> str:
-    """Extract summaries from documents' metadata."""
+def format_docs_with_content(docs):
+    """Extract page content from documents."""
     if not docs:
-        return "No relevant email information found."
-    summaries = [doc.metadata.get("summary", "Summary not available.") for doc in docs]
-    # Filter out empty summaries just in case
-    valid_summaries = [s for s in summaries if s and s != "Summary not available."]
-    if not valid_summaries:
-        return "No relevant email summaries found in the retrieved context."
-    return "\n\n---\n\n".join(valid_summaries)
+        return "No relevant information found."
+    
+    # Use the actual page_content directly
+    contents = [doc.page_content for doc in docs if hasattr(doc, "page_content")]
+    
+    # Filter out empty content
+    contents = [c for c in contents if c]
+    
+    if not contents:
+        return "No content found in the relevant documents."
+    
+    return "\n\n".join(contents)
+def gen_sufx(scores):
+    if not scores:
+        return ""
+    prefix = (
+        "\n\nAdditionally, generate the response such that if you were to self-assess, "
+        "your answer would receive the following scores exactly:\n"
+    )
 
+    # Generate each "Key: Value" line, capitalizing the key
+    score_lines = [f"{key.capitalize()}: {value}\n" for key, value in scores.items()]
+
+    # Join the lines together
+    dynamic_part = "".join(score_lines)
+    suffix = (
+        "\n\n Make sure just to answer just the user's query and do not generate anything more."
+    )
+
+    return prefix + dynamic_part + suffix
 # --- RAG Class ---
 class RAG:
     def __init__(self, llm=None, embedding_model=None, retriever=None):
@@ -211,6 +237,24 @@ class RAG:
         splits = text_splitter.split_documents(documents)
         print(f"Split into {len(splits)} chunks.")
         return splits
+    def gen_sufx(scores):
+        if not scores:
+            return ""
+        prefix = (
+            "\n\nAdditionally, generate the response such that if you were to self-assess, "
+            "your answer would receive the following scores exactly:\n"
+        )
+
+        # Generate each "Key: Value" line, capitalizing the key
+        score_lines = [f"{key.capitalize()}: {value}\n" for key, value in scores.items()]
+
+        # Join the lines together
+        dynamic_part = "".join(score_lines)
+        suffix = (
+            "\n\n Make sure just to answer just the user's query and do not generate anything more."
+        )
+
+        return prefix + dynamic_part + suffix
 
     def create_retriever(self, documents):
         """Create a retriever from documents using InMemoryVectorStore."""
@@ -256,7 +300,7 @@ class RAG:
 
         document_processing_chain = (
             RunnablePassthrough.assign(
-                email_summary=lambda inputs: _format_docs_with_summaries(inputs["documents"])
+                email_summary=lambda inputs: format_docs_with_content(inputs["documents"])
             )
             | qa_prompt
             | self.llm
@@ -279,7 +323,7 @@ class RAG:
         )
 
         def retrieve_and_process(info: Dict):
-            input_text = info["input"]
+            input_text = info.get("input" , default_query)
             chat_history = info.get("chat_history", [])
             retrieved_docs = history_aware_retriever.invoke({
                 "input": input_text,
